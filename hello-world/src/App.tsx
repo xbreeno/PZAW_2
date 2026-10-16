@@ -36,8 +36,8 @@ function Muzyka({ plakat, tytul, rok, autor, songs }) {
         </thead>
         <tbody>
           {songs?.map((song, index) => (
-            <tr key={index}>
-              <td>{index + 22}</td>
+            <tr>
+              <td>{index}</td>
               <td>{song.songTitle}</td>
               <td>{song.duration}</td>
             </tr>
