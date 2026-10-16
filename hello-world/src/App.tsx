@@ -1,4 +1,30 @@
-function Film({ plakat, tytul, rok }) {
+interface Song {
+  songTitle: string;
+  duration: string;
+}
+
+interface Film {
+  plakat: string;
+  tytul: string;
+  rok: number;
+}
+
+interface Ksiazka {
+  plakat: string;
+  tytul: string;
+  rok: number;
+  strony: number;
+}
+
+interface Muzyka {
+  plakat: string;
+  tytul: string;
+  rok: number;
+  autor: string;
+  songs?: Song[];
+}
+
+function Film({ plakat, tytul, rok }: Film) {
   return (
     <div>
       <img src={plakat} alt={tytul} />
@@ -8,7 +34,7 @@ function Film({ plakat, tytul, rok }) {
   );
 }
 
-function Ksiazka({ plakat, tytul, rok, strony }) {
+function Ksiazka({ plakat, tytul, rok, strony }: Ksiazka) {
   return (
     <div>
       <img src={plakat} alt={tytul} />
@@ -19,7 +45,7 @@ function Ksiazka({ plakat, tytul, rok, strony }) {
   );
 }
 
-function Muzyka({ plakat, tytul, rok, autor, songs }) {
+function Muzyka({ plakat, tytul, rok, autor, songs }: Muzyka) {
   return (
     <div>
       <img src={plakat} alt={tytul} />
