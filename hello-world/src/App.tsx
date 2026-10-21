@@ -7,6 +7,7 @@ interface Film {
   plakat: string;
   tytul: string;
   rok: number;
+  rating:number;
 }
 
 interface Ksiazka {
@@ -24,12 +25,13 @@ interface Muzyka {
   songs?: Song[];
 }
 
-function Film({ plakat, tytul, rok }: Film) {
+function Film({ plakat, tytul, rok, rating}: Film) {
   return (
     <div>
       <img src={plakat} alt={tytul} height="200px" />
       <p>{tytul}</p>
       <p>{rok}</p>
+      <p>Ocena: {rating}</p>
     </div>
   );
 }
@@ -79,17 +81,38 @@ function App() {
     {
       plakat: "https://fwcdn.pl/fpo/14/16/1416/7519120_1.8.webp",
       tytul: "Straszny film",
-      rok: 2026
+      rok: 2026,
+      rating: 5
     },
     {
       plakat: "https://media.upflix.pl/renditions/4845/v0/poster_detail@1.webp",
       tytul: "Matrix",
-      rok: 1999
+      rok: 1999,
+      rating: 9
     },
     {
       plakat: "https://cdng.europosters.eu/pod_public/1300/263129.jpg",
       tytul: "Incepcja",
-      rok: 2010
+      rok: 2012,
+      rating: 8
+    },
+    {
+      plakat: "https://fwcdn.pl/fpo/01/87/187/7885890_1.3.jpg",
+      tytul: "Titanic",
+      rok: 1997,
+      rating: 9
+    },
+    {
+      plakat: "https://fwcdn.pl/fpo/09/36/936/8143567.3.jpg",
+      tytul: "Gladiator",
+      rok: 2000,
+      rating: 8
+    },
+    {
+      plakat: "https://fwcdn.pl/fpo/56/29/375629/7670122_2.8.webp",
+      tytul: "Interstellar",
+      rok: 2014,
+      rating: 9
     }
   ];
 
@@ -118,7 +141,7 @@ const albums: Muzyka[] = [
   {
     plakat: "https://t2.genius.com/unsafe/300x300/https%3A%2F%2Fimages.genius.com%2F30395b8b24fac05515fc57c9f5d40b6a.1000x1000x1.png",
     tytul: "FF Deluxe",
-    rok: 2024,
+    rok: 2026,
     autor: "Młody West",
     songs: [
       { songTitle: "Pierwszy dzień miesiąca", duration: "2:14" },
@@ -136,26 +159,62 @@ const albums: Muzyka[] = [
       { songTitle: "Bonnie & Clyde (Bonus Track)", duration: "2:06" },
       { songTitle: "FF DLX: REBIRTH LIVE PERFORMANCE (Bonus Track)", duration: "5:39" }
     ]
-    }
+    },
+    {
+    plakat: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1W6J_2sq9Tyj8e8ksJyXlttmjC0v5_jG7Q167AjWk40HAVBES1Gli8hQ&s=10",
+    tytul: "Najdłuższe Wakacje Życia",
+    rok: 2025,
+    autor: "Monday Waxie",
+    songs: [
+      { songTitle: "z ostatniej ławki", duration: "1:42" },
+      { songTitle: "rap shit", duration: "1:53" },
+      { songTitle: "bitch face", duration: "2:05" },
+      { songTitle: "ed, edd i eddy", duration: "1:53" },
+      { songTitle: "dance, dance, dance", duration: "2:15" },
+      { songTitle: "billie", duration: "1:52" }
+    ]
+  }
   ];
 
 
+  const sortedMovies = [...movies].sort((a, b) => a.tytul.localeCompare(b.tytul, 'pl'));
+
+  const sortedBooks = [...books].sort((a, b) => a.tytul.localeCompare(b.tytul, 'pl'));
+
+  const sortedAlbums = [...albums].sort((a, b) => a.tytul.localeCompare(b.tytul, 'pl'));
+
+  const moviesAfter2010 = sortedMovies.filter((movie) => movie.rok > 2010);
+
+  const booksByYear = sortedBooks.sort((a, b) => b.rok - a.rok);
+
+  let max = sortedAlbums[0].songs?.length || 0;
+  for (const album of sortedAlbums) {
+    if ((album.songs?.length || 0) > max) {
+      max = album.songs?.length || 0;
+    }
+  }
+
+  const albumWithTheMostSongs = sortedAlbums.filter((album) => (album.songs?.length || 0) == max);
+
+
+  
   return (
     <div>
       <h2>Filmy</h2>
       <section style={{ display: "flex", gap: "20px" }}>
-        {movies.map((movie) => (
+        {sortedMovies.map((movie) => (
           <Film
             plakat={movie.plakat} 
             tytul={movie.tytul} 
-            rok={movie.rok} 
+            rok={movie.rok}
+            rating={movie.rating}
           />
         ))}
       </section>
 
       <h2>Książki</h2>
       <section style={{ display: "flex", gap: "20px" }}>
-        {books.map((book) => (
+        {sortedBooks.map((book) => (
           <Ksiazka
             plakat={book.plakat} 
             tytul={book.tytul}
@@ -168,7 +227,44 @@ const albums: Muzyka[] = [
 
       <h2>Muzyka</h2>
       <section style={{ display: "flex", gap: "20px" }}>
-        {albums.map((album) => (
+        {sortedAlbums.map((album) => (
+          <Muzyka 
+            plakat = {album.plakat}
+            tytul = {album.tytul}
+            rok = {album.rok}
+            autor = {album.autor}
+            songs = {album.songs}
+          />
+        ))}
+      </section>
+
+      <h2>Filmy wydane po 2010 roku</h2>
+      <section style={{ display: "flex", gap: "20px" }}>
+        {moviesAfter2010.map((movie) => (
+          <Film
+            plakat={movie.plakat} 
+            tytul={movie.tytul} 
+            rok={movie.rok}
+            rating={movie.rating}
+          />
+        ))}
+      </section>
+
+      <h2>Książki posortowane według roku wydania</h2>
+      <section style={{ display: "flex", gap: "20px" }}>
+        {booksByYear.map((book) => (
+          <Ksiazka
+            plakat={book.plakat} 
+            tytul={book.tytul}
+            rok={book.rok} 
+            strony={book.strony}
+          />
+        ))}
+      </section>
+
+      <h2>Album z największą liczbą utworów</h2>
+      <section style={{ display: "flex", gap: "20px" }}>
+        {albumWithTheMostSongs.map((album) => (
           <Muzyka 
             plakat = {album.plakat}
             tytul = {album.tytul}
