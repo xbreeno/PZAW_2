@@ -1,23 +1,25 @@
+import { useState } from "react";
+
 interface Song {
   songTitle: string;
   duration: string;
 }
 
-interface Film {
+interface Movie {
   plakat: string;
   tytul: string;
   rok: number;
   rating:number;
 }
 
-interface Ksiazka {
+interface Book {
   plakat: string;
   tytul: string;
   rok: number;
   strony: number;
 }
 
-interface Muzyka {
+interface Album {
   plakat: string;
   tytul: string;
   rok: number;
@@ -25,65 +27,98 @@ interface Muzyka {
   songs?: Song[];
 }
 
-function Film({ plakat, tytul, rok, rating}: Film) {
+interface CollapsibleSection{
+  title: string;
+  children: React.ReactNode
+}
+
+function Movie({ plakat, tytul, rok, rating }: Movie) {
   return (
-    <div>
-      <img src={plakat} alt={tytul} height="200px" />
-      <p>{tytul}</p>
-      <p>{rok}</p>
-      <p>Ocena: {rating}</p>
-      {rating >= 8 && <p><strong>Polecany</strong></p>}
+    <div className="card h-100" style={{ width: "14rem" }}>
+      <img src={plakat} className="card-img-top mt-4" alt={tytul} style={{ height: "250px", objectFit: "contain"}} />
+      <div className="card-body d-flex flex-column">
+        <h5 className="card-title fs-6">{tytul}</h5>
+        <p className="card-text mb-1 text-muted">{rok}</p>
+        <p className="card-text mb-2">Ocena: {rating}</p>
+        {rating >= 8 && <span className="badge bg-success mt-auto">Polecany</span>}
+      </div>
     </div>
   );
 }
 
-function Ksiazka({ plakat, tytul, rok, strony }: Ksiazka) {
+function Book({ plakat, tytul, rok, strony }: Book) {
   return (
-    <div>
-      <img src={plakat} alt={tytul} height="200px" />
-      <p>{tytul}</p>
-      <p>{rok}</p>
-      <p>Strony: {strony}</p>
-      {rok < 2000 && <p><strong>Klasyka</strong></p>}
+    <div className="card h-100" style={{ width: "14rem" }}>
+      <img src={plakat} className="card-img-top mt-4" alt={tytul} style={{ height: "250px", objectFit: "contain"}} />
+      <div className="card-body d-flex flex-column">
+        <h5 className="card-title fs-6">{tytul}</h5>
+        <p className="card-text mb-1 text-muted">{rok}</p>
+        <p className="card-text mb-2">Strony: {strony}</p>
+        {rok < 2000 && <span className="badge bg-secondary mt-auto">Klasyka</span>}
+      </div>
     </div>
   );
 }
 
-function Muzyka({ plakat, tytul, rok, autor, songs }: Muzyka) {
+function Album({ plakat, tytul, rok, autor, songs }: Album) {
   return (
-    <div>
-      <img src={plakat} alt={tytul} height="200px" />
-      <p>{tytul}</p>
-      <p>{rok}</p>
-      <p>{autor}</p>
-      {!songs || songs.length === 0 ? (
-        <p>Brak utworów</p>
-      ) : (
-        <table border={1} cellPadding="5">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Song Title</th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            {songs.map((song, index) => (
-              <tr>
-                <td>{index + 1}</td>
-                <td>{song.songTitle}</td>
-                <td>{song.duration}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div className="card h-100">
+      <img src={plakat} className="card-img-top mt-4" alt={tytul} style={{ height: "250px", objectFit: "contain"}} />
+      <div className="card-body d-flex flex-column">
+        <h5 className="card-title fs-6">{tytul}</h5>
+        <p className="card-text mb-1 text-muted">{rok}</p>
+        <p className="card-text mb-2">{autor}</p>
+
+        {!songs || songs.length === 0 ? (
+          <div className="alert alert-warning p-2 text-center" role="alert">
+            Brak utworów
+          </div>
+        ) : (
+          <div className="table-responsive">
+            <table className="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th className="text-end">Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                {songs.map((song, index) => (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{song.songTitle}</td>
+                    <td className="text-end">{song.duration}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CollapsibleSection({ title, children }: CollapsibleSection) {
+  const [isOpen, setIsOpen] = useState(true);
+
+  return (
+    <div className="mb-4 w-100">
+      <h2 
+        onClick={() => setIsOpen(!isOpen)} 
+        style={{ cursor: "pointer" }}
+        className="fs-4 mb-3"
+      >
+        {isOpen ? "▾ " : "▸ "} {title}
+      </h2>
+      {isOpen && <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">{children}</div>}
     </div>
   );
 }
 
 function App() {
-  const movies: Film[] = [
+  const movies: Movie[] = [
     {
       plakat: "https://fwcdn.pl/fpo/14/16/1416/7519120_1.8.webp",
       tytul: "Straszny film",
@@ -122,7 +157,7 @@ function App() {
     }
   ];
 
-const books: Ksiazka[] = [
+const books: Book[] = [
     {
       plakat: "https://www.bellona.pl/wp-content/uploads/lalka.jpg", 
       tytul: "Lalka", 
@@ -155,7 +190,7 @@ const books: Ksiazka[] = [
     }
   ];
 
-  const albums: Muzyka[] = [
+  const albums: Album[] = [
     {
       plakat: "https://t2.genius.com/unsafe/300x300/https%3A%2F%2Fimages.genius.com%2F30395b8b24fac05515fc57c9f5d40b6a.1000x1000x1.png",
       tytul: "FF Deluxe",
@@ -225,81 +260,86 @@ const books: Ksiazka[] = [
 
   
   return (
-    <div>
-      <h2>Filmy</h2>
-      <section style={{ display: "flex", gap: "20px" }}>
+    <div className="container my-4">
+      <CollapsibleSection title="Filmy">
         {sortedMovies.map((movie) => (
-          <Film
-            plakat={movie.plakat} 
-            tytul={movie.tytul} 
-            rok={movie.rok}
-            rating={movie.rating}
-          />
+          <div className="col">
+            <Movie
+              plakat={movie.plakat} 
+              tytul={movie.tytul} 
+              rok={movie.rok}
+              rating={movie.rating}
+            />
+          </div>
         ))}
-      </section>
+      </CollapsibleSection>
 
-      <h2>Książki</h2>
-      <section style={{ display: "flex", gap: "20px" }}>
+      <CollapsibleSection title="Książki">
         {sortedBooks.map((book) => (
-          <Ksiazka
-            plakat={book.plakat} 
-            tytul={book.tytul}
-            rok={book.rok} 
-            strony={book.strony}
-          />
+          <div className="col">
+            <Book
+              plakat={book.plakat} 
+              tytul={book.tytul}
+              rok={book.rok} 
+              strony={book.strony}
+            />
+          </div>
         ))}
-        
-      </section>
+      </CollapsibleSection>
 
-      <h2>Muzyka</h2>
-      <section style={{ display: "flex", gap: "20px" }}>
+      <CollapsibleSection title="Albumy">
         {sortedAlbums.map((album) => (
-          <Muzyka 
-            plakat = {album.plakat}
-            tytul = {album.tytul}
-            rok = {album.rok}
-            autor = {album.autor}
-            songs = {album.songs}
-          />
+          <div className="col">
+            <Album 
+              plakat = {album.plakat}
+              tytul = {album.tytul}
+              rok = {album.rok}
+              autor = {album.autor}
+              songs = {album.songs}
+            />
+          </div>
         ))}
-      </section>
+      </CollapsibleSection>
 
-      <h2>Filmy wydane po 2010 roku</h2>
-      <section style={{ display: "flex", gap: "20px" }}>
+      <CollapsibleSection title="Filmy wydane po 2010 roku">
         {moviesAfter2010.map((movie) => (
-          <Film
-            plakat={movie.plakat} 
-            tytul={movie.tytul} 
-            rok={movie.rok}
-            rating={movie.rating}
-          />
+          <div className="col">
+            <Movie 
+              plakat={movie.plakat} 
+              tytul={movie.tytul} 
+              rok={movie.rok}
+              rating={movie.rating}
+            />
+          </div>
         ))}
-      </section>
+      </CollapsibleSection>
 
-      <h2>Książki posortowane według roku wydania</h2>
-      <section style={{ display: "flex", gap: "20px" }}>
+      <CollapsibleSection title="Książki posortowane według roku wydania">
         {booksByYear.map((book) => (
-          <Ksiazka
-            plakat={book.plakat} 
-            tytul={book.tytul}
-            rok={book.rok} 
-            strony={book.strony}
-          />
+          <div className="col">
+            <Book
+              plakat={book.plakat} 
+              tytul={book.tytul}
+              rok={book.rok} 
+              strony={book.strony}
+            />
+          </div>
         ))}
-      </section>
+      </CollapsibleSection>
 
-      <h2>Album z największą liczbą utworów</h2>
-      <section style={{ display: "flex", gap: "20px" }}>
+      <CollapsibleSection title="Album z największą liczbą utworów">
         {albumWithTheMostSongs.map((album) => (
-          <Muzyka 
-            plakat = {album.plakat}
-            tytul = {album.tytul}
-            rok = {album.rok}
-            autor = {album.autor}
-            songs = {album.songs}
-          />
+          <div className="col">
+            <Album 
+              plakat = {album.plakat}
+              tytul = {album.tytul}
+              rok = {album.rok}
+              autor = {album.autor}
+              songs = {album.songs}
+            />
+          </div>
         ))}
-      </section>
+      </CollapsibleSection>
     </div>
   );
 }
