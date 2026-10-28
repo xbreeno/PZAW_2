@@ -34,12 +34,18 @@ interface CollapsibleSection{
 
 function Movie({ plakat, tytul, rok, rating }: Movie) {
   return (
-    <div className="card h-100" style={{ width: "14rem" }}>
+    <div className="card h-100" style={{ width: "14rem" }} onClick={() => console.log(`Wybrano film: ${tytul}`)}>
       <img src={plakat} className="card-img-top mt-4" alt={tytul} style={{ height: "250px", objectFit: "contain"}} />
       <div className="card-body d-flex flex-column">
         <h5 className="card-title fs-6">{tytul}</h5>
-        <p className="card-text mb-1 text-muted">{rok}</p>
         <p className="card-text mb-2">Ocena: {rating}</p>
+        <p className="card-text mb-1 text-muted">{rok}</p>
+        <button className="btn btn-primary mt-auto mb-2" onClick={(event) => {
+          event.stopPropagation();
+          console.log(`Pokaż szczegóły dla ${tytul}`);
+        }}>
+          Pokaż szczegóły
+        </button>
         {rating >= 8 && <span className="badge bg-success mt-auto">Polecany</span>}
       </div>
     </div>
@@ -61,6 +67,17 @@ function Book({ plakat, tytul, rok, strony }: Book) {
 }
 
 function Album({ plakat, tytul, rok, autor, songs }: Album) {
+
+  
+  // Różnica polega na tym ,że zwykła funkcja ma swoje własne 'this', 
+  // a strzałkowa nie ma i bierze je z otoczenia. 
+  // Dodatkowo zwykłą funkcję można wywołać zanim się ją w ogóle napisało w kodzie (hoisting), 
+  // a strzałkowa tak nie potrafi i wyrzuca błąd.
+  
+  function handleSongClick(songTitle: string) {
+    console.log(`Wybrano utwór: ${songTitle} z ${tytul}`)
+  }
+
   return (
     <div className="card h-100">
       <img src={plakat} className="card-img-top mt-4" alt={tytul} style={{ height: "250px", objectFit: "contain"}} />
@@ -87,7 +104,7 @@ function Album({ plakat, tytul, rok, autor, songs }: Album) {
                 {songs.map((song, index) => (
                   <tr>
                     <td>{index + 1}</td>
-                    <td>{song.songTitle}</td>
+                    <td onClick={() => handleSongClick(song.songTitle)} style={{cursor: "pointer"}}>{song.songTitle}</td>
                     <td className="text-end">{song.duration}</td>
                   </tr>
                 ))}
@@ -112,12 +129,16 @@ function CollapsibleSection({ title, children }: CollapsibleSection) {
       >
         {isOpen ? "▾ " : "▸ "} {title}
       </h2>
-      {isOpen && <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">{children}</div>}
+      {isOpen && <div>{children}</div>}
     </div>
   );
 }
 
 function App() {
+  const [movieSearch, setMovieSearch] = useState("");
+  const [bookSearch, setBookSearch] = useState("");
+  const [albumSearch, setAlbumSearch] = useState("");
+
   const movies: Movie[] = [
     {
       plakat: "https://fwcdn.pl/fpo/14/16/1416/7519120_1.8.webp",
@@ -157,7 +178,7 @@ function App() {
     }
   ];
 
-const books: Book[] = [
+  const books: Book[] = [
     {
       plakat: "https://www.bellona.pl/wp-content/uploads/lalka.jpg", 
       tytul: "Lalka", 
@@ -234,18 +255,13 @@ const books: Book[] = [
       autor: "Fryderyk Chopin",
       songs: []
     }
-  
   ];
 
-
   const sortedMovies = [...movies].sort((a, b) => a.tytul.localeCompare(b.tytul, 'pl'));
-
   const sortedBooks = [...books].sort((a, b) => a.tytul.localeCompare(b.tytul, 'pl'));
-
   const sortedAlbums = [...albums].sort((a, b) => a.tytul.localeCompare(b.tytul, 'pl'));
 
   const moviesAfter2010 = sortedMovies.filter((movie) => movie.rok > 2010);
-
   const booksByYear = [...books].sort((a, b) => b.rok - a.rok);
 
   let max = sortedAlbums[0].songs?.length || 0;
@@ -257,88 +273,138 @@ const books: Book[] = [
 
   const albumWithTheMostSongs = sortedAlbums.filter((album) => (album.songs?.length || 0) == max);
 
-
-  
   return (
     <div className="container my-4">
       <CollapsibleSection title="Filmy">
-        {sortedMovies.map((movie) => (
-          <div className="col">
-            <Movie
-              plakat={movie.plakat} 
-              tytul={movie.tytul} 
-              rok={movie.rok}
-              rating={movie.rating}
-            />
-          </div>
-        ))}
+        <input
+          type="text"
+          className="form-control mb-3"
+          placeholder="Wpisz tytuł"
+          id="movie-search"
+          value={movieSearch}
+          onChange={(event) => {
+            const value = event.target.value;
+            console.log(value);
+            setMovieSearch(value);
+          }}
+        />
+        <p className="text-muted">Szukasz filmu: {movieSearch}</p>
+        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+          {sortedMovies.map((movie) => (
+            <div className="col" key={movie.tytul}>
+              <Movie 
+                plakat={movie.plakat} 
+                tytul={movie.tytul} 
+                rok={movie.rok}
+                rating={movie.rating}
+              />
+            </div>
+          ))}
+        </div>
       </CollapsibleSection>
 
       <CollapsibleSection title="Książki">
-        {sortedBooks.map((book) => (
-          <div className="col">
-            <Book
-              plakat={book.plakat} 
-              tytul={book.tytul}
-              rok={book.rok} 
-              strony={book.strony}
-            />
-          </div>
-        ))}
+        <input
+          type="text"
+          className="form-control mb-3"
+          placeholder="Wpisz tytuł"
+          id="book-search"
+          value={bookSearch}
+          onChange={(event) => {
+            const value = event.target.value;
+            console.log(value);
+            setBookSearch(value);
+          }}
+        />
+        <p className="text-muted">Szukasz książki: {bookSearch}</p>
+        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+          {sortedBooks.map((book) => (
+            <div className="col" key={book.tytul}>
+              <Book
+                plakat={book.plakat} 
+                tytul={book.tytul}
+                rok={book.rok} 
+                strony={book.strony}
+              />
+            </div>
+          ))}
+        </div>
       </CollapsibleSection>
 
       <CollapsibleSection title="Albumy">
-        {sortedAlbums.map((album) => (
-          <div className="col">
-            <Album 
-              plakat = {album.plakat}
-              tytul = {album.tytul}
-              rok = {album.rok}
-              autor = {album.autor}
-              songs = {album.songs}
-            />
-          </div>
-        ))}
+        <input
+          type="text"
+          className="form-control mb-3"
+          placeholder="Wpisz tytuł"
+          id="album-search"
+          value={albumSearch}
+          onChange={(event) => {
+            const value = event.target.value;
+            console.log(value);
+            setAlbumSearch(value);
+          }}
+        />
+        <p className="text-muted">Szukasz albumu: {albumSearch}</p>
+        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+          {sortedAlbums.map((album) => (
+            <div className="col" key={album.tytul}>
+              <Album 
+                plakat={album.plakat}
+                tytul={album.tytul}
+                rok={album.rok}
+                autor={album.autor}
+                songs={album.songs}
+              />
+            </div>
+          ))}
+        </div>
       </CollapsibleSection>
 
+      {/* POZOSTAŁE SEKCJE */}
       <CollapsibleSection title="Filmy wydane po 2010 roku">
-        {moviesAfter2010.map((movie) => (
-          <div className="col">
-            <Movie 
-              plakat={movie.plakat} 
-              tytul={movie.tytul} 
-              rok={movie.rok}
-              rating={movie.rating}
-            />
-          </div>
-        ))}
+        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+          {moviesAfter2010.map((movie) => (
+            <div className="col" key={movie.tytul}>
+              <Movie 
+                plakat={movie.plakat} 
+                tytul={movie.tytul} 
+                rok={movie.rok}
+                rating={movie.rating}
+              />
+            </div>
+          ))}
+        </div>
       </CollapsibleSection>
 
       <CollapsibleSection title="Książki posortowane według roku wydania">
-        {booksByYear.map((book) => (
-          <div className="col">
-            <Book
-              plakat={book.plakat} 
-              tytul={book.tytul}
-              rok={book.rok} 
-              strony={book.strony}
-            />
-          </div>
-        ))}
+        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+          {booksByYear.map((book) => (
+            <div className="col" key={book.tytul}>
+              <Book
+                plakat={book.plakat} 
+                tytul={book.tytul}
+                rok={book.rok} 
+                strony={book.strony}
+              />
+            </div>
+          ))}
+        </div>
       </CollapsibleSection>
 
       <CollapsibleSection title="Album z największą liczbą utworów">
-        {albumWithTheMostSongs.map((album) => (
-          <div className="col">
-            <Album 
-              plakat = {album.plakat}
-              tytul = {album.tytul}
-              rok = {album.rok}
-              autor = {album.autor}
-              songs = {album.songs}
-            />
-          </div>
-        ))}
+        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+          {albumWithTheMostSongs.map((album) => (
+            <div className="col" key={album.tytul}>
+              <Album 
+                plakat={album.plakat}
+                tytul={album.tytul}
+                rok={album.rok}
+                autor={album.autor}
+                songs={album.songs}
+              />
+            </div>
+          ))}
+        </div>
       </CollapsibleSection>
     </div>
   );
