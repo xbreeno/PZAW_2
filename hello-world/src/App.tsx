@@ -36,6 +36,17 @@ function App() {
 
   const albumWithTheMostSongs = sortedAlbums.filter((album) => (album.songs?.length || 0) == max);
 
+
+  const filteredMovies = sortedMovies.filter((movie) =>
+    movie.tytul.toLowerCase().includes(movieSearch.toLowerCase())
+  );
+  const filteredBooks = sortedBooks.filter((book) =>
+    book.tytul.toLowerCase().includes(bookSearch.toLowerCase())
+  );
+  const filteredAlbums = sortedAlbums.filter((album) =>
+    album.tytul.toLowerCase().includes(albumSearch.toLowerCase())
+  );
+
   return (
     <div className="container my-4">
       <CollapsibleSection title="Filmy">
@@ -52,18 +63,25 @@ function App() {
           }}
         />
         <p className="text-muted">Szukasz filmu: {movieSearch}</p>
-        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
-          {sortedMovies.map((movie) => (
-            <div className="col" key={movie.tytul}>
-              <Movie 
-                plakat={movie.plakat} 
-                tytul={movie.tytul} 
-                rok={movie.rok}
-                rating={movie.rating}
-              />
-            </div>
-          ))}
-        </div>
+
+        {filteredMovies.length === 0 ? (
+          <div className="alert alert-warning text-center">
+            Nie znaleziono filmów
+          </div>
+        ) : (
+          <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+            {filteredMovies.map((movie) => (
+              <div className="col" key={movie.tytul}>
+                <Movie 
+                  plakat={movie.plakat} 
+                  tytul={movie.tytul} 
+                  rok={movie.rok}
+                  rating={movie.rating}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </CollapsibleSection>
 
       <CollapsibleSection title="Książki">
@@ -80,18 +98,25 @@ function App() {
           }}
         />
         <p className="text-muted">Szukasz książki: {bookSearch}</p>
-        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
-          {sortedBooks.map((book) => (
-            <div className="col" key={book.tytul}>
-              <Book
-                plakat={book.plakat} 
-                tytul={book.tytul}
-                rok={book.rok} 
-                strony={book.strony}
-              />
-            </div>
-          ))}
-        </div>
+
+        {filteredBooks.length === 0 ? (
+          <div className="alert alert-warning text-center">
+            Nie znaleziono książek
+          </div>
+        ) : (
+          <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+            {filteredBooks.map((book) => (
+              <div className="col" key={book.tytul}>
+                <Book
+                  plakat={book.plakat} 
+                  tytul={book.tytul}
+                  rok={book.rok} 
+                  strony={book.strony}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </CollapsibleSection>
 
       <CollapsibleSection title="Albumy">
@@ -108,19 +133,26 @@ function App() {
           }}
         />
         <p className="text-muted">Szukasz albumu: {albumSearch}</p>
-        <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
-          {sortedAlbums.map((album) => (
-            <div className="col" key={album.tytul}>
-              <Album 
-                plakat={album.plakat}
-                tytul={album.tytul}
-                rok={album.rok}
-                autor={album.autor}
-                songs={album.songs}
-              />
-            </div>
-          ))}
-        </div>
+
+        {filteredAlbums.length === 0 ? (
+          <div className="alert alert-warning text-center">
+            Nie znaleziono albumów
+          </div>
+        ) : (
+          <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
+            {filteredAlbums.map((album) => (
+              <div className="col" key={album.tytul}>
+                <Album 
+                  plakat={album.plakat}
+                  tytul={album.tytul}
+                  rok={album.rok}
+                  autor={album.autor}
+                  songs={album.songs}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </CollapsibleSection>
 
       {/* POZOSTAŁE SEKCJE */}
