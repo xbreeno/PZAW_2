@@ -155,7 +155,6 @@ function App() {
         )}
       </CollapsibleSection>
 
-      {/* POZOSTAŁE SEKCJE */}
       <CollapsibleSection title="Filmy wydane po 2010 roku">
         <div className="row row-cols-1 row-cols-md-3 row-cols-xl-4 g-4">
           {moviesAfter2010.map((movie) => (
